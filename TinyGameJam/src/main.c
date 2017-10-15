@@ -2,6 +2,7 @@
 #include <ship.h>
 #include <ui.h>
 #include <world.h>
+#include <time.h>
 
 
 void update_keys(bool* u, bool* d, bool* r, bool* l, bool* f, GLFWwindow* window)
@@ -64,49 +65,72 @@ int main(void)
 
 	glfwMakeContextCurrent(window);
 
-	ui_init();
+	srand(time(NULL));
 
-	ship_t ship = ship_init();
-	double lastFrame = 0, currentFrame = 0, dtd = 0;
-	float dt = 0.0f;
-
-	bool u = 0, d = 0, r = 0, l = 0, f = 0;
-	
-
-	glViewport(0, 0, 640, 640);
-
-	ship.mode = ship_simple;
-
-
-	world_t* world = world_init();
-
-	while (!glfwWindowShouldClose(window))
+	while (true)
 	{
-		currentFrame = glfwGetTime();
+		ui_init();
 
-		update_keys(&u, &d, &r, &l, &f, window);
+		ship_t ship = ship_init();
+		double lastFrame = 0, currentFrame = 0, dtd = 0;
+		float dt = 0.0f;
 
-		ship_update(&ship, dt, u, d, r, l, f);
-		
-		world_update(world, dt, &ship);
-
-		glClear(GL_COLOR_BUFFER_BIT);
-
-		ship_draw(&ship);
-		world_draw(world);
-		ui_draw(&ship, world);
+		bool u = 0, d = 0, r = 0, l = 0, f = 0;
 
 
+		glViewport(0, 0, 640, 640);
 
-		dtd = currentFrame - lastFrame;
-		dt = (float)dtd;
-		lastFrame = currentFrame;
+		ship.mode = ship_simple;
 
-		glfwSwapBuffers(window);
 
-		glfwPollEvents();
+		world_t* world = world_init();
+
+		while (!glfwWindowShouldClose(window))
+		{
+
+			// Check for game finish 
+			if(world->restartTimer == 0)
+			{
+				// This effectively restars the game
+				break;
+			}
+
+			currentFrame = glfwGetTime();
+
+			update_keys(&u, &d, &r, &l, &f, window);
+
+			ship_update(&ship, dt, u, d, r, l, f);
+
+			world_update(world, dt, &ship);
+
+			glClear(GL_COLOR_BUFFER_BIT);
+
+			ship_draw(&ship);
+			world_draw(world);
+			ui_draw(&ship, world);
+
+
+
+			dtd = currentFrame - lastFrame;
+			dt = (float)dtd;
+			lastFrame = currentFrame;
+
+			glfwSwapBuffers(window);
+
+			glfwPollEvents();
+		}
+
+		if (glfwWindowShouldClose(window))
+		{
+			// Actual quit
+			glfwTerminate();
+			return 0;
+		}
+
+		free(world);
 	}
 
 	glfwTerminate();
 	return 0;
+
 }

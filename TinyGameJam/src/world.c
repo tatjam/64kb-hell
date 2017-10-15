@@ -143,7 +143,7 @@ int enemy_update(enemy_t* enemy, float dt, ship_t* player, world_t* world)
 								else
 								{
 									// Health
-									if (rand() % 1000 > 1)
+									if (rand() % 1000 > 850)
 									{
 										// Superhealth
 										world_add_powerup(world, enemy->rx, enemy->ry, nvx, nvy, powerup_superhealth);
@@ -545,7 +545,7 @@ float randf()
 
 void world_spawn(world_t* world)
 {
-	srand(world->level * 1043240 % 40041);
+	//srand(world->level * 1043240 % 40041);
 
 	if (world->level <= 0)
 	{

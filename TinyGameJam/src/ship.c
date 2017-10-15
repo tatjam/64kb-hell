@@ -182,19 +182,19 @@ void ship_shoot(ship_t* ship)
 
 					if (i == 0)
 					{
-						ship->bullets[i].vy = 2.0f;
-						ship->bullets[i].vx = -0.5f;
+						ship->bullets[j].vy = 2.0f;
+						ship->bullets[j].vx = -0.5f;
 
 					}
 					else if (i == 1)
 					{
-						ship->bullets[i].vy = 2.0f;
-						ship->bullets[i].vx = 0.0f;
+						ship->bullets[j].vy = 2.0f;
+						ship->bullets[j].vx = 0.0f;
 					}
 					else
 					{
-						ship->bullets[i].vy = 2.0f;
-						ship->bullets[i].vx = 0.5f;
+						ship->bullets[j].vy = 2.0f;
+						ship->bullets[j].vx = 0.5f;
 					}
 
 					break;
