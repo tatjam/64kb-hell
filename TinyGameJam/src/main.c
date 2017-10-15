@@ -55,6 +55,8 @@ int main(void)
 	if (!glfwInit())
 		return -1;
 
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 	window = glfwCreateWindow(640, 640, "64Kb Hell", NULL, NULL);
 	if (!window)
@@ -85,6 +87,9 @@ int main(void)
 
 		world_t* world = world_init();
 
+		//glEnable(GL_DEPTH_TEST);
+		//glTranslatef(0.0f, 0.0f, -2.0f);
+
 		while (!glfwWindowShouldClose(window))
 		{
 
@@ -103,7 +108,7 @@ int main(void)
 
 			world_update(world, dt, &ship);
 
-			glClear(GL_COLOR_BUFFER_BIT);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			ship_draw(&ship);
 			world_draw(world);

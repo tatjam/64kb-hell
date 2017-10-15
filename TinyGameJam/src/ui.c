@@ -24,7 +24,7 @@ void ui_string(float x, float y, float scale, char* str)
 		fpf_get_glyph_gl_texture_coordinates(c, &left, &top, &right, &bottom);
 
 		glEnable(GL_TEXTURE_2D);
-		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_BLEND);
 		glBindTexture(GL_TEXTURE_2D, tex);
 
 		glBegin(GL_QUADS);
@@ -55,6 +55,10 @@ void ui_string(float x, float y, float scale, char* str)
 
 void ui_init()
 {
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+
 	fpf_create_alpha_texture(ftex, FPF_TEXTURE_WIDTH * FPF_TEXTURE_HEIGHT,
 		FPF_TEXTURE_WIDTH, FPF_VECTOR_Y_AXIS);
 	
@@ -65,14 +69,17 @@ void ui_init()
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
 	glTexImage2D(GL_TEXTURE_2D,0,GL_ALPHA,FPF_TEXTURE_WIDTH,FPF_TEXTURE_HEIGHT,0,
 		GL_ALPHA,GL_UNSIGNED_BYTE,ftex);
 
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_TEXTURE_2D);
+
 
 }
 
@@ -141,7 +148,7 @@ void ui_draw(ship_t* ship, world_t* world)
 	{
 		if (world->restartTimer == -1)
 		{
-			world->restartTimer = 8;
+			world->restartTimer = 5;
 			world->restartSTimer = 1.0f;
 		}
 		glBegin(GL_QUADS);
