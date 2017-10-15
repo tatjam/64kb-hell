@@ -159,6 +159,8 @@ void ui_draw(ship_t* ship, world_t* world)
 		ui_string(-1, 0.85, 0.1, buff);
 		sprintf(buff, "SCORE: %i", world->score);
 		ui_string(-1, 0.45, 0.1, buff);
+		sprintf(buff, "LEVEL: %i", world->level);
+		ui_string(-1, 0.30, 0.1, buff);
 		sprintf(buff, "GAME WILL RESET");
 		ui_string(-1, 0, 0.1, buff);
 		sprintf(buff, "IN %i SECONDS!", world->restartTimer);

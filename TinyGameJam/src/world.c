@@ -472,68 +472,73 @@ void world_update(world_t* world, float dt, ship_t* player)
 		}
 	}
 
-	size_t count = 0;
-
-	for (size_t i = 0; i < MAX_ENEMIES; i++)
+	if (world->restartTimer == -1)
 	{
-		count += enemy_update(&world->enemies[i], dt, player, world);
-	}
+		size_t count = 0;
 
-	for (size_t i = 0; i < MAX_ENEMIES/4; i++)
-	{
-		if (world->explosions[i].active)
+		for (size_t i = 0; i < MAX_ENEMIES; i++)
 		{
-			world->explosions[i].t += dt * 3.5f;
-			world->explosions[i].s = (sin(world->explosions[i].t) / 2 + 0.5f) * 0.35f;
+			count += enemy_update(&world->enemies[i], dt, player, world);
+		}
 
-			if (world->explosions[i].t >= 1.0f)
+		for (size_t i = 0; i < MAX_ENEMIES / 4; i++)
+		{
+			if (world->explosions[i].active)
 			{
-				world->explosions[i].active = false;
+				world->explosions[i].t += dt * 3.5f;
+				world->explosions[i].s = (sin(world->explosions[i].t) / 2 + 0.5f) * 0.35f;
+
+				if (world->explosions[i].t >= 1.0f)
+				{
+					world->explosions[i].active = false;
+				}
+
+			}
+		}
+
+		for (size_t i = 0; i < WORLD_STARS; i++)
+		{
+			world->stars[i].y -= world->stars[i].l * dt;
+
+			if (world->stars[i].y < -1.0)
+			{
+				world->stars[i].y = 1.0f;
+			}
+		}
+
+		for (size_t i = 0; i < MAX_POWERUPS; i++)
+		{
+			powerup_update(&world->powerups[i], dt, player, world);
+		}
+
+		if (count == 0)
+		{
+			// Next level
+			world->level++;
+			world->score += world->level * 5;
+
+			// Spawn next level
+			world_spawn(world);
+		}
+
+		if (world->health <= 0)
+		{
+			if (player->mode == ship_simple)
+			{
+				// LOSE
+
+			}
+			else if (player->mode == ship_dual)
+			{
+				player->mode = ship_simple;
+				world->health = 5;
+			}
+			else
+			{
+				player->mode -= 2;
+				world->health = 5;
 			}
 
-		}
-	}
-
-	for (size_t i = 0; i < WORLD_STARS; i++)
-	{
-		world->stars[i].y -= world->stars[i].l * dt;
-		
-		if (world->stars[i].y < -1.0)
-		{
-			world->stars[i].y = 1.0f;
-		}
-	}
-
-	for (size_t i = 0; i < MAX_POWERUPS; i++)
-	{
-		powerup_update(&world->powerups[i], dt, player, world);
-	}
-
-	if (count == 0)
-	{
-		// Next level
-		world->level++;
-		world->score += world->level * 5;
-
-		// Spawn next level
-		world_spawn(world);
-	}
-
-	if (world->health <= 0)
-	{
-		if (player->mode == 0)
-		{
-			// LOSE
-			
-		}
-		else if (player->mode == 1)
-		{
-			player->mode = 0;
-		}
-		else
-		{
-			player->mode-=2;
-			world->health = 5;
 		}
 	}
 }
@@ -576,9 +581,9 @@ void world_spawn(world_t* world)
 		// Colliders and slow/med shooters
 		// < 7 bois
 
-		for (size_t i = 0; i < world->level - 2; i++)
+		for (size_t i = 0; i < world->level - 4; i++)
 		{
-			world_add_enemy(world, randf() * 0.8f, randf() * 0.8f, randf() * 0.8f, randf() * 3.0f, rand() % 5, rand() % 5);
+			world_add_enemy(world, randf() * 0.8f, randf() * 0.8f, randf() * 0.8f, randf() * 3.0f, rand() % 5, rand() % 4);
 		}
 	}
 	else
@@ -586,9 +591,9 @@ void world_spawn(world_t* world)
 		// All shit
 		// < 14 bois
 
-		for (size_t i = 0; i < rand() % 35; i++)
+		for (size_t i = 0; i < rand() % (35 + (world->level - 15)); i++)
 		{
-			world_add_enemy(world, randf() * 0.8f, randf() * 0.8f, randf() * 0.8f, randf() * 3.0f, rand() % 6, rand() % 5);
+			world_add_enemy(world, randf() * 0.8f, randf() * 0.8f, randf() * 0.8f, randf() * 3.0f, rand() % 6, rand() % 4);
 		}
 	}
 }
